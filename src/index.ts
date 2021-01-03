@@ -9,7 +9,8 @@ import writeJsonFile = require('write-json-file')
 export default async function (updaterFilePath: string) {
   const workspaceDir = await findWorkspaceDir(updaterFilePath)
   if (!workspaceDir) throw new Error(`${updaterFilePath} is not inside a workspace`)
-  const { default: updater } = await import(updaterFilePath)
+  const updaterLib = await import(updaterFilePath)
+  const updater = updaterLib.default ?? updaterLib
   const updateOptions = await updater(workspaceDir)
   await performUpdates(workspaceDir, updateOptions)
 }
