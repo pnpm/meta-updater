@@ -1,0 +1,45 @@
+{
+  "name": "@pnpm/meta-updater",
+  "version": "0.0.0",
+  "description": "Keeps meta files up-to-date in a monorepo",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "bin": "lib/cli.js",
+  "files": [
+    "lib",
+    "!*.map"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm run tsc",
+    "tsc": "rimraf lib && tsc",
+    "test": "pnpm run tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnpm/meta-updater.git"
+  },
+  "keywords": [],
+  "engines": {
+    "node": ">=10.12"
+  },
+  "author": "Zoltan Kochan <z@kochan.io> (https://www.kochan.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pnpm/meta-updater/issues"
+  },
+  "homepage": "https://github.com/pnpm/meta-updater#readme",
+  "dependencies": {
+    "@pnpm/find-workspace-dir": "^2.0.0",
+    "@pnpm/find-workspace-packages": "^2.3.30",
+    "@pnpm/logger": "^3.2.3",
+    "@pnpm/types": "^6.3.1",
+    "load-json-file": "^6.2.0",
+    "path-exists": "^4.0.0",
+    "write-json-file": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.19",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
+  }
+}
