@@ -11,7 +11,7 @@ import printDiff from 'print-diff'
 export default async function (opts: { test?: boolean }) {
   const workspaceDir = await findWorkspaceDir['default'](process.cwd())
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)
-  const updater = await import(path.resolve('.meta-updater/main.mjs'))
+  const updater = await import(`file://${path.resolve('.meta-updater/main.mjs').replace(/\\/g, '/')}`)
   const updateOptions = await updater.default(workspaceDir)
   await performUpdates(workspaceDir, updateOptions, opts)
 }
