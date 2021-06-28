@@ -12,7 +12,7 @@ const CLI = path.join(__dirname, '../lib/cli.js')
 test('updates manifests', async () => {
   const tmp = tempy.directory()
   await fsx.copy(WORKSPACE1, tmp)
-  const result = await execa('node', [CLI, './update.js'], { cwd: tmp })
+  const result = await execa('node', [CLI], { cwd: tmp })
   expect(result.exitCode).toBe(0)
   const fooManifest = await loadJsonFile<{ name: string }>(path.join(tmp, 'packages/foo/package.json'))
   expect(fooManifest.name).toBe('qar')
