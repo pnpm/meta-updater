@@ -1,19 +1,18 @@
 import findWorkspaceDir from '@pnpm/find-workspace-dir'
 import findWorkspacePackages from '@pnpm/find-workspace-packages'
 import { ProjectManifest } from '@pnpm/types'
-import loadJsonFile = require('load-json-file')
-import path = require('path')
-import exists = require('path-exists')
-import R = require('ramda')
-import writeJsonFile = require('write-json-file')
-import printDiff = require('print-diff')
+import loadJsonFile from 'load-json-file'
+import path from 'path'
+import exists from 'path-exists'
+import R from 'ramda'
+import writeJsonFile from 'write-json-file'
+import printDiff from 'print-diff'
 
 export default async function (updaterFilePath: string, opts: { test?: boolean }) {
-  const workspaceDir = await findWorkspaceDir(updaterFilePath)
+  const workspaceDir = await findWorkspaceDir['default'](updaterFilePath)
   if (!workspaceDir) throw new Error(`${updaterFilePath} is not inside a workspace`)
-  const updaterLib = await import(updaterFilePath)
-  const updater = updaterLib.default ?? updaterLib
-  const updateOptions = await updater(workspaceDir)
+  const updater = await import(updaterFilePath)
+  const updateOptions = await updater.default(workspaceDir)
   await performUpdates(workspaceDir, updateOptions, opts)
 }
 
@@ -22,7 +21,7 @@ async function performUpdates (
   update: Record<string, (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object>>,
   opts: { test?: boolean }
 ) {
-  let pkgs = await findWorkspacePackages(workspaceDir, { engineStrict: false })
+  let pkgs = await findWorkspacePackages['default'](workspaceDir, { engineStrict: false })
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
     for (const [p, updateFn] of Object.entries(update)) {
       if (p === 'package.json') {

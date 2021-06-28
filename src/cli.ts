@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import meow = require('meow')
-import update from '.'
-import path = require('path')
+import meow from 'meow'
+import update from './index.js'
+import path from 'path'
 
 const cli = meow(`
 Usage

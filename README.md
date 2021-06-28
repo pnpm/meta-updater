@@ -15,7 +15,7 @@
 Create a JavaScript file that contains the updater functions. For instance, the next file will have updaters for `package.json` and `tsconfig.json` files:
 
 ```js
-module.exports = (workspaceDir) => {
+export default (workspaceDir) => {
   return {
     'package.json': (manifest, dir) => {
       return {

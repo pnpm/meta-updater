@@ -1,10 +1,12 @@
-module.exports.default = () => ({
-  'package.json': (manifest, dir) => ({
-    ...manifest,
-    name: 'qar',
-  }),
-  'tsconfig.json': (tsconfig, dir) => ({
-    ...tsconfig,
-    foo: 1,
-  }),
-})
+export default () => {
+  return {
+    'package.json': (manifest, dir) => ({
+      ...manifest,
+      name: 'qar',
+    }),
+    'tsconfig.json': (tsconfig, dir) => ({
+      ...tsconfig,
+      foo: 1,
+    }),
+  }
+}

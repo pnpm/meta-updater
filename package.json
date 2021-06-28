@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "bin": "lib/cli.js",
+  "type": "module",
   "files": [
     "lib",
     "!*.map"
@@ -12,7 +13,7 @@
   "scripts": {
     "prepublishOnly": "pnpm run compile",
     "compile": "rimraf lib && tsc",
-    "test": "pnpm run compile && jest"
+    "test": "pnpm run compile && NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "repository": {
     "type": "git",
