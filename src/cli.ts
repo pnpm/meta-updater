@@ -13,6 +13,7 @@ Examples
   $ meta-updater
   $ meta-updater --test
 `, {
+  importMeta: import.meta,
   flags: {
     test: {
       type: 'boolean',
