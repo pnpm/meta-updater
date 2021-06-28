@@ -1,0 +1,23 @@
+import execa = require('execa')
+import fsx = require('fs-extra')
+import loadJsonFile = require('load-json-file')
+import path = require('path')
+import tempy = require('tempy')
+
+const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
+const CLI = path.join(__dirname, '../lib/cli.js')
+
+test('updates manifests', async () => {
+  const tmp = tempy.directory()
+  await fsx.copy(WORKSPACE1, tmp)
+  const result = await execa('node', [CLI, './update.js'], { cwd: tmp })
+  expect(result.exitCode).toBe(0)
+  const fooManifest = await loadJsonFile<{ name: string }>(path.join(tmp, 'packages/foo/package.json'))
+  expect(fooManifest.name).toBe('qar')
+  const barManifest = await loadJsonFile<{ name: string }>(path.join(tmp, 'packages/bar/package.json'))
+  expect(barManifest.name).toBe('qar')
+  const fooTsconfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/foo/tsconfig.json'))
+  expect(fooTsconfig.foo).toBe(1)
+  const barTsconfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/bar/tsconfig.json'))
+  expect(barTsconfig.foo).toBe(1)
+})

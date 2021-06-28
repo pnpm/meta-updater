@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "removeComments": false,
+    "preserveConstEnums": true
+  }
+}
