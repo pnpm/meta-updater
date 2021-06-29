@@ -16,16 +16,19 @@ export default async function (opts: { test?: boolean }) {
   await performUpdates(workspaceDir, updateOptions, opts)
 }
 
+type UpdateFunc = (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object>
+
 async function performUpdates (
   workspaceDir: string,
-  update: Record<string, (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object>>,
+  update: Record<string, UpdateFunc>,
   opts: { test?: boolean }
 ) {
   let pkgs = await findWorkspacePackages['default'](workspaceDir, { engineStrict: false })
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
     for (const [p, updateFn] of Object.entries(update)) {
+      const clonedManifest = R.clone(manifest)
       if (p === 'package.json') {
-        const updatedManifest = await updateFn(manifest, dir, manifest)
+        const updatedManifest = await updateFn(clonedManifest, dir, clonedManifest)
         const needsUpdate = !R.equals(manifest, updatedManifest)
         if (!needsUpdate) continue
         if (!opts.test) {
@@ -42,7 +45,7 @@ async function performUpdates (
         continue
       }
       const obj = await loadJsonFile<Object>(fp)
-      const updatedObj = await updateFn(obj as object, dir, manifest)
+      const updatedObj = await updateFn(R.clone(obj as object), dir, clonedManifest)
       const needsUpdate = !R.equals(obj, updatedObj)
       if (!needsUpdate) continue
       if (!opts.test) {
