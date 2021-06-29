@@ -13,20 +13,32 @@ export default async function (opts: { test?: boolean }) {
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)
   const updater = await import(`file://${path.resolve('.meta-updater/main.mjs').replace(/\\/g, '/')}`)
   const updateOptions = await updater.default(workspaceDir)
-  await performUpdates(workspaceDir, updateOptions, opts)
+  const result = await performUpdates(workspaceDir, updateOptions, opts)
+  if (result != null) {
+    console.log(`ERROR: ${result.path} is not up-to-date`)
+    printJsonDiff(result.actual, result.expected)
+    process.exit(1)
+  }
 }
 
 type UpdateFunc = (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object>
 
-async function performUpdates (
+type UpdateError = {
+  expected: Object
+  actual: Object
+  path: string
+}
+
+export async function performUpdates (
   workspaceDir: string,
   update: Record<string, UpdateFunc>,
   opts: { test?: boolean }
-) {
+): Promise<null | UpdateError> {
   let pkgs = await findWorkspacePackages['default'](workspaceDir, { engineStrict: false })
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
     for (const [p, updateFn] of Object.entries(update)) {
       const clonedManifest = R.clone(manifest)
+      const fp = path.join(dir, p)
       if (p === 'package.json') {
         const updatedManifest = await updateFn(clonedManifest, dir, clonedManifest)
         const needsUpdate = !R.equals(manifest, updatedManifest)
@@ -35,12 +47,13 @@ async function performUpdates (
           await writeProjectManifest(updatedManifest)
           continue
         }
-        console.log(`ERROR: package.json file in ${dir} is not up-to-date`)
-        printJsonDiff(manifest, updatedManifest)
-        process.exit(1)
+        return {
+          expected: manifest,
+          actual: updatedManifest,
+          path: fp,
+        }
       }
       if (!p.endsWith('.json')) continue
-      const fp = path.join(dir, p)
       if (!await exists(fp)) {
         continue
       }
@@ -52,11 +65,14 @@ async function performUpdates (
         await writeJsonFile(fp, updatedObj, { detectIndent: true })
         continue
       }
-      console.log(`ERROR: ${fp} is not up-to-date`)
-      printJsonDiff(obj, updatedObj)
-      process.exit(1)
+      return {
+        expected: obj,
+        actual: updatedObj,
+        path: fp,
+      }
     }
   }
+  return null
 }
 
 function printJsonDiff(actual: Object, expected: Object) {

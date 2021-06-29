@@ -4,6 +4,7 @@ import loadJsonFile from 'load-json-file'
 import path from 'path'
 import tempy from 'tempy'
 import { fileURLToPath } from 'url'
+import { performUpdates } from "../src/index"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
@@ -22,4 +23,32 @@ test('updates manifests', async () => {
   expect(fooTsconfig.foo).toBe(1)
   const barTsconfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/bar/tsconfig.json'))
   expect(barTsconfig.foo).toBe(1)
+})
+
+test('updates are detected', async () => {
+  const tmp = tempy.directory()
+  await fsx.copy(WORKSPACE1, tmp)
+  const result = await performUpdates(tmp, {
+    'package.json': (manifest: { dependencies?: Record<string, string> }, dir) => {
+      if (manifest.dependencies != null) {
+        delete manifest.dependencies['express']
+      }
+      return manifest
+    },
+  }, { test: true })
+  expect(result).toEqual({
+    expected: {
+      name: 'bar',
+      version: '0.0.0',
+      dependencies: {
+        express: '3',
+      },
+    },
+    actual: {
+      name: 'bar',
+      version: '0.0.0',
+      dependencies: {},
+    },
+    path: path.join(tmp, 'packages/bar/package.json'),
+  });
 })
