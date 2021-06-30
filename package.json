@@ -32,7 +32,7 @@
   "dependencies": {
     "@pnpm/find-workspace-dir": "^3.0.1",
     "@pnpm/find-workspace-packages": "^3.0.8",
-    "@pnpm/logger": "^3.2.3",
+    "@pnpm/logger": "^4.0.0",
     "@pnpm/types": "^7.3.0",
     "load-json-file": "^6.2.0",
     "meow": "^10.0.1",
