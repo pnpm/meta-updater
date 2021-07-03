@@ -52,3 +52,35 @@ test('updates are detected', async () => {
     path: path.join(tmp, 'packages/bar/package.json'),
   });
 })
+
+test('new config files are added', async () => {
+  const tmp = tempy.directory()
+  await fsx.copy(WORKSPACE1, tmp)
+  const result = await performUpdates(tmp, {
+    'config/config.json': (config) => {
+      expect(config).toBe(null)
+      return { foo: 1 }
+    },
+  })
+  expect(result).toBe(null)
+  const fooConfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/foo/config/config.json'))
+  expect(fooConfig.foo).toBe(1)
+  const barConfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/bar/config/config.json'))
+  expect(barConfig.foo).toBe(1)
+})
+
+test('config files are removed', async () => {
+  const tmp = tempy.directory()
+  await fsx.copy(WORKSPACE1, tmp)
+  const result = await performUpdates(tmp, {
+    'tsconfig.json': (config, dir, manifest) => {
+      if (manifest.name === 'foo') {
+        return null
+      }
+      return config
+    },
+  })
+  expect(result).toBe(null)
+  expect(fsx.existsSync(path.join(tmp, 'packages/foo/tsconfig.json'))).toBeFalsy()
+  expect(fsx.existsSync(path.join(tmp, 'packages/bar/tsconfig.json'))).toBeTruthy()
+})

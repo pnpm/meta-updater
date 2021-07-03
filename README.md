@@ -47,6 +47,12 @@ To check that all meta files are up-to-date, run `pnpm meta-updater --test`. It 
 }
 ```
 
+## API
+
+### Updater Function: `(config | null, dir, manifest) => Promise<config | null>`
+
+The updater function recieves the config object or null (if the config file does not exist). The updater function returns the config object that should be saved. If the updater function returns null, the config should be removed.
+
 ## License
 
 [MIT](./LICENSE) © [Zoltan Kochan](https://www.kochan.io/)

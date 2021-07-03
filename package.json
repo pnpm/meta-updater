@@ -36,7 +36,6 @@
     "@pnpm/types": "^7.3.0",
     "load-json-file": "^6.2.0",
     "meow": "^10.0.1",
-    "path-exists": "^4.0.0",
     "print-diff": "^1.0.0",
     "ramda": "^0.27.1",
     "write-json-file": "^4.3.0"

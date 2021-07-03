@@ -1,9 +1,9 @@
 import findWorkspaceDir from '@pnpm/find-workspace-dir'
 import findWorkspacePackages from '@pnpm/find-workspace-packages'
 import { ProjectManifest } from '@pnpm/types'
+import fs from 'fs'
 import loadJsonFile from 'load-json-file'
 import path from 'path'
-import exists from 'path-exists'
 import R from 'ramda'
 import writeJsonFile from 'write-json-file'
 import printDiff from 'print-diff'
@@ -21,18 +21,18 @@ export default async function (opts: { test?: boolean }) {
   }
 }
 
-type UpdateFunc = (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object>
+type UpdateFunc = (obj: object, dir: string, manifest: ProjectManifest) => object | Promise<object | null> | null
 
 type UpdateError = {
-  expected: Object
-  actual: Object
+  expected: Object | null
+  actual: Object | null
   path: string
 }
 
 export async function performUpdates (
   workspaceDir: string,
   update: Record<string, UpdateFunc>,
-  opts: { test?: boolean }
+  opts?: { test?: boolean }
 ): Promise<null | UpdateError> {
   let pkgs = await findWorkspacePackages['default'](workspaceDir, { engineStrict: false })
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
@@ -43,7 +43,7 @@ export async function performUpdates (
         const updatedManifest = await updateFn(clonedManifest, dir, clonedManifest)
         const needsUpdate = !R.equals(manifest, updatedManifest)
         if (!needsUpdate) continue
-        if (!opts.test) {
+        if (!opts?.test) {
           await writeProjectManifest(updatedManifest)
           continue
         }
@@ -54,27 +54,38 @@ export async function performUpdates (
         }
       }
       if (!p.endsWith('.json')) continue
-      if (!await exists(fp)) {
-        continue
-      }
-      const obj = await loadJsonFile<Object>(fp)
+      const obj = await readJsonFile(fp)
       const updatedObj = await updateFn(R.clone(obj as object), dir, clonedManifest)
       const needsUpdate = !R.equals(obj, updatedObj)
       if (!needsUpdate) continue
-      if (!opts.test) {
-        await writeJsonFile(fp, updatedObj, { detectIndent: true })
+      if (opts?.test) {
+        return {
+          expected: obj,
+          actual: updatedObj,
+          path: fp,
+        }
+      }
+      if (updatedObj == null) {
+        await fs.promises.unlink(fp)
         continue
       }
-      return {
-        expected: obj,
-        actual: updatedObj,
-        path: fp,
-      }
+      await writeJsonFile(fp, updatedObj, { detectIndent: true })
     }
   }
   return null
 }
 
-function printJsonDiff(actual: Object, expected: Object) {
+async function readJsonFile (p: string) {
+  try {
+    return await loadJsonFile<object>(p)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return null
+    }
+    throw err
+  }
+}
+
+function printJsonDiff(actual: Object | null, expected: Object | null) {
   printDiff(JSON.stringify(actual, null, 2), JSON.stringify(expected, null, 2))
 }
