@@ -31,7 +31,7 @@
   "homepage": "https://github.com/pnpm/meta-updater#readme",
   "dependencies": {
     "@pnpm/find-workspace-dir": "^3.0.1",
-    "@pnpm/find-workspace-packages": "^3.0.8",
+    "@pnpm/find-workspace-packages": "^3.1.0",
     "@pnpm/logger": "^4.0.0",
     "@pnpm/types": "^7.3.0",
     "load-json-file": "^6.2.0",

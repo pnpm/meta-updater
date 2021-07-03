@@ -1,5 +1,5 @@
 import findWorkspaceDir from '@pnpm/find-workspace-dir'
-import findWorkspacePackages from '@pnpm/find-workspace-packages'
+import { findWorkspacePackagesNoCheck } from '@pnpm/find-workspace-packages'
 import { ProjectManifest } from '@pnpm/types'
 import fs from 'fs'
 import loadJsonFile from 'load-json-file'
@@ -34,7 +34,7 @@ export async function performUpdates (
   update: Record<string, UpdateFunc>,
   opts?: { test?: boolean }
 ): Promise<null | UpdateError> {
-  let pkgs = await findWorkspacePackages['default'](workspaceDir, { engineStrict: false })
+  let pkgs = await findWorkspacePackagesNoCheck(workspaceDir)
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
     for (const [p, updateFn] of Object.entries(update)) {
       const clonedManifest = R.clone(manifest)
@@ -44,7 +44,7 @@ export async function performUpdates (
         const needsUpdate = !R.equals(manifest, updatedManifest)
         if (!needsUpdate) continue
         if (!opts?.test) {
-          await writeProjectManifest(updatedManifest)
+          await writeProjectManifest(updatedManifest!)
           continue
         }
         return {

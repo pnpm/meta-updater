@@ -2,7 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@pnpm/find-workspace-dir': ^3.0.1
-  '@pnpm/find-workspace-packages': ^3.0.8
+  '@pnpm/find-workspace-packages': ^3.1.0
   '@pnpm/logger': ^4.0.0
   '@pnpm/types': ^7.3.0
   '@types/fs-extra': ^9.0.11
@@ -14,7 +14,6 @@ specifiers:
   jest: ^27.0.6
   load-json-file: ^6.2.0
   meow: ^10.0.1
-  path-exists: ^4.0.0
   print-diff: ^1.0.0
   ramda: ^0.27.1
   rimraf: ^3.0.2
@@ -25,12 +24,11 @@ specifiers:
 
 dependencies:
   '@pnpm/find-workspace-dir': 3.0.1
-  '@pnpm/find-workspace-packages': 3.0.8_@pnpm+logger@4.0.0
+  '@pnpm/find-workspace-packages': 3.1.0_@pnpm+logger@4.0.0
   '@pnpm/logger': 4.0.0
   '@pnpm/types': 7.3.0
   load-json-file: 6.2.0
   meow: 10.0.1
-  path-exists: 4.0.0
   print-diff: 1.0.0
   ramda: 0.27.1
   write-json-file: 4.3.0
@@ -748,8 +746,8 @@ packages:
       find-up: 5.0.0
     dev: false
 
-  /@pnpm/find-workspace-packages/3.0.8_@pnpm+logger@4.0.0:
-    resolution: {integrity: sha512-EMhcH+0rxqv7CLfDCbU5wUzm5fzPUzuu+uteX8k/wuzKkDmMX07LtbkdWfEdMr0VjwzSFV+Pb6QqP9zU442QfQ==}
+  /@pnpm/find-workspace-packages/3.1.0_@pnpm+logger@4.0.0:
+    resolution: {integrity: sha512-eDZdU3nTPh5oR+oOuJh3TjxFT89kE9n7GJ45+gtjiZU9xytGHFg0GkmnKm1RFSIkhVnhJHEYe5lxGs1S5Yi1LA==}
     engines: {node: '>=12.17'}
     dependencies:
       '@pnpm/cli-utils': 0.6.8_@pnpm+logger@4.0.0
