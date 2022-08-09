@@ -12,7 +12,7 @@ export default async function (opts: { test?: boolean }) {
   const workspaceDir = await findWorkspaceDir['default'](process.cwd())
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)
   const updater = await import(`file://${path.resolve('.meta-updater/main.mjs').replace(/\\/g, '/')}`)
-  const updateOptions = await updater.default(workspaceDir)
+  const updateOptions = await updater.default(workspaceDir, opts)
   const result = await performUpdates(workspaceDir, updateOptions, opts)
   if (result != null) {
     console.log(`ERROR: ${result.path} is not up-to-date`)
