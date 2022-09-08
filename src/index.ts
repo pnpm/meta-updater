@@ -8,6 +8,10 @@ import R from 'ramda'
 import writeJsonFile from 'write-json-file'
 import printDiff from 'print-diff'
 
+import { createUpdateOptions } from './updater/createUpdateOptions'
+import { createFormat } from './updater/createFormat'
+export { createUpdateOptions, createFormat };
+
 export default async function (opts: { test?: boolean }) {
   const workspaceDir = await findWorkspaceDir['default'](process.cwd())
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)

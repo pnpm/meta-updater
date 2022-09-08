@@ -12,7 +12,8 @@
     "target": "es2019",
     "outDir": "lib",
     "module": "ES2020",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "noErrorTruncation": true
   },
   "include": [
     "src/**/*.ts"
