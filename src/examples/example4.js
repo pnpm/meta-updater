@@ -1,42 +1,45 @@
-import * as fs from "fs/promises";
-import { createFormat, createUpdateOptions } from "..";
-import { eslintrc, tsconfig } from "./defaultFiles";
+import * as fs from "fs/promises"
+import { createFormat, createUpdateOptions } from ".."
+import { eslintrc, tsconfig } from "./defaultFiles"
 
 /**
- * Usage Example 2: With custom format '.gitignore' defined
+ * User-defined format '.gitignore'
  */
-const gitignoreFormat = createFormat({
-  async read(filePath) {
-    return (await fs.readFile(filePath, "utf8")).split("\n");
+ const gitignoreFormat = createFormat({
+  async read({ resolvedPath }) {
+    return (await fs.readFile(resolvedPath, "utf8")).split("\n")
   },
-  update(content, userUpdateFn, dir, manifest) {
-    return userUpdateFn(content, dir, manifest);
+  update(actual, updater, options) {
+    return updater(actual, options)
   },
-  async write(content, filePath) {
-    const unique = (array) => Array.from(new Set() < T[number] > array).sort();
-    await fs.writeFile(filePath, unique(content).join("\n"), "utf8");
+  equal(expected, actual) {
+    return R.equals(expected, actual)
   },
-});
+  async write(expected, { resolvedPath }) {
+    const unique = (array) => Array.from(new Set<T[number]>(array)).sort()
+    await fs.writeFile(resolvedPath, unique(expected).join("\n"), "utf8")
+  },
+})
 
 export default async (_workspaceDir) => {
   return createUpdateOptions({
     files: {
       // builtin
-      "tsconfig.json": (prev, _dir, _manifest) => prev ?? tsconfig,
-      ".eslintrc [json]": (prev) => prev ?? eslintrc,
+      "tsconfig.json": (actual, _options) => actual ?? tsconfig,
+      ".eslintrc [.json]": (actual) => actual ?? eslintrc,
       // custom
-      ".prettierignore [.gitignore]": (prev) => prev ?? ["node_modules"],
-      "by-extension.ignore": (prev, _dir, _manifest) => prev,
-      "by-type.txt [ignore]": (prev, _dir, _manifest) => prev,
+      ".prettierignore [.gitignore]": (actual) => actual ?? ["node_modules"],
+      "by-extension.ignore": (actual) => actual,
+      "by-type.txt [.ignore]": (actual, _options) => actual,
       // [format-type] takes precedence
-      "by-type.ignore [json]": (prev, _dir, _manifest) => prev,
+      "by-type.ignore [.json]": (actual) => actual,
     },
     formats: {
       ".gitignore": gitignoreFormat,
-      ignore: {
+      ".ignore": {
         ...gitignoreFormat,
-        extension: /** @type {const} */ (".ignore"),
       },
     },
-  });
-};
+  })
+}
+
