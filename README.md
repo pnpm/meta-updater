@@ -13,7 +13,10 @@
 ## Usage
 
 Create a JavaScript file at `.meta-updater/main.mjs` that contains the updater functions.
-For instance, the next file will have updaters for `package.json` and `tsconfig.json` files:
+
+## Example 1
+
+The following `.meta-updater/main.mjs` defines updaters for `package.json` and `tsconfig.json` files:
 
 ```js
 export default (workspaceDir) => {
@@ -36,6 +39,58 @@ export default (workspaceDir) => {
   }
 }
 ```
+
+### Example 2
+
+The following `.meta-updater/main.mjs` defines format `#ignore` and updaters for `.gitignore` and `.eslintrc` using explicit format specifier.
+
+```js
+import * as fs from 'fs/promises'
+import { createFormat, createUpdateOptions } from '@pnpm/meta-updater'
+
+/* default .eslintrc */
+export const eslintrc = {}
+
+/* default tsconfig.json */
+export const tsconfig = { compilerOptions: { target: 'esnext' } }
+
+/**
+ * User-defined format '#ignore'
+ */
+const ignoreFormat = createFormat({
+  async read({ resolvedPath }) {
+    return (await fs.readFile(resolvedPath, 'utf8')).split('\n')
+  },
+  update(actual, updater, options) {
+    return updater(actual, options)
+  },
+  equal(expected, actual) {
+    return R.equals(expected, actual)
+  },
+  async write(expected, { resolvedPath }) {
+    const unique = (array) => Array.from(new Set() < T[number] > array).sort()
+    await fs.writeFile(resolvedPath, unique(expected).join('\n'), 'utf8')
+  },
+})
+
+export default async (_workspaceDir) => {
+  return createUpdateOptions({
+    files: {
+      // builtin
+      'tsconfig.json': (actual, _options) => actual ?? tsconfig,
+      // buildin .json format with explicit format specifier
+      '.eslintrc [.json]': (actual) => actual ?? eslintrc,
+      // user-defined `#ignore` format
+      '.prettierignore [#ignore]': (actual) => actual ?? ['node_modules'],
+    },
+    formats: {
+      '#ignore': ignoreFormat,
+    },
+  })
+}
+```
+
+See more examples at [src/examples/](src/example/)
 
 To perform the update on the affected config files, run `pnpm meta-updater`.
 

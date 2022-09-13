@@ -3,6 +3,9 @@ import type { BaseFormatPlugins } from './formatPlugin.js'
 import type { BuildInFormatPlugins } from './builtInFormats.js'
 
 export function createUpdateOptions<FileNameWithOptions extends string>(
+  files: UpdateOptionsLegacy<FileNameWithOptions>
+): UpdateOptionsLegacy<FileNameWithOptions>
+export function createUpdateOptions<FileNameWithOptions extends string>(
   updateOptions: UpdateOptions<FileNameWithOptions>
 ): UpdateOptions<FileNameWithOptions>
 export function createUpdateOptions<
@@ -14,6 +17,8 @@ export function createUpdateOptions<
 export function createUpdateOptions(updateOptions: unknown) {
   return updateOptions
 }
+
+export type UpdateOptionsLegacy<FileNameWithOptions extends string> = Files<FileNameWithOptions, BuildInFormatPlugins>
 
 export type UpdateOptions<FileNameWithOptions extends string> = {
   files: Files<FileNameWithOptions, BuildInFormatPlugins>

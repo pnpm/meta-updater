@@ -3,7 +3,7 @@ import { unlink, stat } from 'fs/promises'
 import findWorkspaceDir from '@pnpm/find-workspace-dir'
 import printDiff from 'print-diff'
 import { findWorkspacePackagesNoCheck } from '@pnpm/find-workspace-packages'
-import { UpdateOptions, UpdateOptionsWithFormats } from './updater/updateOptions.js'
+import { UpdateOptions, UpdateOptionsLegacy, UpdateOptionsWithFormats } from './updater/updateOptions.js'
 import { BaseFormatPlugins, FormatPlugin } from './updater/formatPlugin.js'
 import { builtInFormatPlugins } from './updater/builtInFormats.js'
 import { clone } from './clone.js'
@@ -14,7 +14,12 @@ export {
   type FormatPlugin,
   type FormatPluginFnOptions,
 } from './updater/formatPlugin.js'
-export { createUpdateOptions, type UpdateOptions, type UpdateOptionsWithFormats } from './updater/updateOptions.js'
+export {
+  createUpdateOptions,
+  type UpdateOptionsLegacy,
+  type UpdateOptions,
+  type UpdateOptionsWithFormats,
+} from './updater/updateOptions.js'
 export type { Files } from './updater/files'
 
 export default async function (opts: { test?: boolean }) {
@@ -53,13 +58,17 @@ export async function performUpdates<
   UserDefinedFormatPlugins extends BaseFormatPlugins
 >(
   workspaceDir: string,
-  update2: UpdateOptions<FileNameWithOptions> | UpdateOptionsWithFormats<FileNameWithOptions, UserDefinedFormatPlugins>,
+  updateParam:
+    | UpdateOptionsLegacy<FileNameWithOptions>
+    | UpdateOptions<FileNameWithOptions>
+    | UpdateOptionsWithFormats<FileNameWithOptions, UserDefinedFormatPlugins>,
   opts?: { test?: boolean }
 ): Promise<null | UpdateError[]> {
+  const update = 'files' in updateParam ? updateParam : { files: updateParam }
   let pkgs = await findWorkspacePackagesNoCheck(workspaceDir)
 
-  const { files } = update2
-  const formats = 'formats' in update2 ? { ...builtInFormatPlugins, ...update2.formats } : builtInFormatPlugins
+  const { files } = update
+  const formats = 'formats' in update ? { ...builtInFormatPlugins, ...update.formats } : builtInFormatPlugins
 
   const promises = pkgs.flatMap(({ dir, manifest, writeProjectManifest }) =>
     Object.keys(files).map(async (fileKey) => {
@@ -132,7 +141,7 @@ function parseFileKey(fileKey: string, formatPlugins: Record<string, FormatPlugi
 
     if (!formatPlugin) {
       throw new Error(
-        `Configuration error: there is no format plugin for fileKey "${fileKey}" with forced extension "${extension}"`
+        `Configuration error: there is no format plugin for fileKey "${fileKey}" with explicit format specifier "${extension}"`
       )
     }
 

@@ -27,17 +27,19 @@ export default async (_workspaceDir: string) => {
     files: {
       // builtin
       'tsconfig.json': (actual, _options) => actual ?? tsconfig,
+      // buildin .json format with explicit format specifier
       '.eslintrc [.json]': (actual) => actual ?? eslintrc,
-      // custom
-      '.prettierignore [.gitignore]': (actual) => actual ?? ['node_modules'],
-      'by-extension.ignore': (actual) => actual,
-      'by-type.txt [.ignore]': (actual, _options) => actual,
-      // [format-type] takes precedence
-      'by-type.ignore [.json]': (actual) => actual,
+
+      // user-defined `#ignore` format
+      '.prettierignore [#ignore]': (actual) => actual ?? ['node_modules'],
+      '.gitignore': (actual) => actual,
+      'by-type.txt [#ignore]': (actual, _options) => actual,
+      // [explicit format specifier] takes precedence over extension detection
+      'by-type.json [#ignore]': (actual) => actual,
     },
     formats: {
       '.gitignore': gitignoreFormat,
-      '.ignore': {
+      '#ignore': {
         ...gitignoreFormat,
       },
     },

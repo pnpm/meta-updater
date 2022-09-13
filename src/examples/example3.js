@@ -1,5 +1,5 @@
-import { createUpdateOptions } from ".."
-import { eslintrc, tsconfig } from "./defaultFiles"
+import { createUpdateOptions } from '..'
+import { eslintrc, tsconfig } from './defaultFiles'
 
 /**
  * Usage Example 1: Simple usage
@@ -7,8 +7,10 @@ import { eslintrc, tsconfig } from "./defaultFiles"
 export default (_workspaceDir) => {
   return createUpdateOptions({
     files: {
-      "tsconfig.json": (actual, _options) => actual ?? tsconfig,
-      ".eslintrc [.json]": (actual) => actual ?? eslintrc,
+      // builtin .json format
+      'tsconfig.json': (actual, _options) => actual ?? tsconfig,
+      // buildin .json format with explicit format specifier
+      '.eslintrc [.json]': (actual) => actual ?? eslintrc,
     },
   })
 }
