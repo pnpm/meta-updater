@@ -1,4 +1,4 @@
-import type { ProjectManifest } from "@pnpm/types"
+import type { ProjectManifest } from '@pnpm/types'
 
 export function createFormat<Content>(format: FormatPlugin<Content>) {
   return format

@@ -1,10 +1,10 @@
-import execa from 'execa'
+import { execa } from 'execa'
 import fsx from 'fs-extra'
-import loadJsonFile from 'load-json-file'
+import { loadJsonFile } from 'load-json-file'
 import path from 'path'
 import tempy from 'tempy'
 import { fileURLToPath } from 'url'
-import { performUpdates } from "../src/index"
+import { createUpdateOptions, performUpdates } from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
@@ -28,40 +28,53 @@ test('updates manifests', async () => {
 test('updates are detected', async () => {
   const tmp = tempy.directory()
   await fsx.copy(WORKSPACE1, tmp)
-  const result = await performUpdates(tmp, {
-    'package.json': (manifest: { dependencies?: Record<string, string> }, dir) => {
-      if (manifest.dependencies != null) {
-        delete manifest.dependencies['express']
-      }
-      return manifest
-    },
-  }, { test: true })
-  expect(result).toEqual({
-    expected: {
-      name: 'bar',
-      version: '0.0.0',
-      dependencies: {
-        express: '3',
+  const result = await performUpdates(
+    tmp,
+    createUpdateOptions({
+      files: {
+        'package.json': (manifest: null | { dependencies?: Record<string, string> }) => {
+          if (manifest?.dependencies != null) {
+            delete manifest.dependencies['express']
+          }
+          return manifest
+        },
       },
+    }),
+    { test: true }
+  )
+  expect(result).toEqual([
+    {
+      actual: {
+        name: 'bar',
+        version: '0.0.0',
+        dependencies: {
+          express: '3',
+        },
+      },
+      expected: {
+        name: 'bar',
+        version: '0.0.0',
+        dependencies: {},
+      },
+      path: path.resolve(tmp, 'packages/bar/package.json'),
     },
-    actual: {
-      name: 'bar',
-      version: '0.0.0',
-      dependencies: {},
-    },
-    path: path.join(tmp, 'packages/bar/package.json'),
-  });
+  ])
 })
 
 test('new config files are added', async () => {
   const tmp = tempy.directory()
   await fsx.copy(WORKSPACE1, tmp)
-  const result = await performUpdates(tmp, {
-    'config/config.json': (config) => {
-      expect(config).toBe(null)
-      return { foo: 1 }
-    },
-  })
+  const result = await performUpdates(
+    tmp,
+    createUpdateOptions({
+      files: {
+        'config/config.json': (config) => {
+          expect(config).toBe(null)
+          return { foo: 1 }
+        },
+      },
+    })
+  )
   expect(result).toBe(null)
   const fooConfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/foo/config/config.json'))
   expect(fooConfig.foo).toBe(1)
@@ -72,14 +85,19 @@ test('new config files are added', async () => {
 test('config files are removed', async () => {
   const tmp = tempy.directory()
   await fsx.copy(WORKSPACE1, tmp)
-  const result = await performUpdates(tmp, {
-    'tsconfig.json': (config, dir, manifest) => {
-      if (manifest.name === 'foo') {
-        return null
-      }
-      return config
-    },
-  })
+  const result = await performUpdates(
+    tmp,
+    createUpdateOptions({
+      files: {
+        'tsconfig.json': (config, { manifest }) => {
+          if (manifest.name === 'foo') {
+            return null
+          }
+          return config
+        },
+      },
+    })
+  )
   expect(result).toBe(null)
   expect(fsx.existsSync(path.join(tmp, 'packages/foo/tsconfig.json'))).toBeFalsy()
   expect(fsx.existsSync(path.join(tmp, 'packages/bar/tsconfig.json'))).toBeTruthy()

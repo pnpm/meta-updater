@@ -1,6 +1,6 @@
-import type { Files } from "./files"
-import type { BaseFormatPlugins } from "./formatPlugin.js"
-import type { BuildInFormatPlugins } from "./builtInFormats.js"
+import type { Files } from './files'
+import type { BaseFormatPlugins } from './formatPlugin.js'
+import type { BuildInFormatPlugins } from './builtInFormats.js'
 
 export function createUpdateOptions<FileNameWithOptions extends string>(
   updateOptions: UpdateOptions<FileNameWithOptions>

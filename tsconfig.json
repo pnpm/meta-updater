@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "lib": ["ES2020"],
-    "types": ["node"],
+    "types": ["node", "jest"],
     "target": "es2019",
     "outDir": "lib",
     "module": "es2020",

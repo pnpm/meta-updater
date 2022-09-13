@@ -13,7 +13,7 @@
   "scripts": {
     "prepublishOnly": "pnpm run compile",
     "compile": "rimraf lib && tsc",
-    "test": "pnpm run compile && NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "pnpm run compile && NODE_OPTIONS=--experimental-vm-modules jest --verbose=false"
   },
   "repository": {
     "type": "git",

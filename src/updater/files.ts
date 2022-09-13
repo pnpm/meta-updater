@@ -1,6 +1,6 @@
-import { BaseFormatPlugins, FormatPlugin, Updater } from "./formatPlugin.js"
+import { BaseFormatPlugins, FormatPlugin, Updater } from './formatPlugin.js'
 
-type GetContent<T extends FormatPlugin<unknown>> = NonNullable<Awaited<ReturnType<T["update"]>>>
+type GetContent<T extends FormatPlugin<unknown>> = NonNullable<Awaited<ReturnType<T['update']>>>
 
 type GetSupportedExtensions<FormatPlugins extends BaseFormatPlugins> = string & keyof FormatPlugins
 

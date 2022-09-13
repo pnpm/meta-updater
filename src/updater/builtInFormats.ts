@@ -1,11 +1,11 @@
-import { equals } from "ramda"
-import { basename } from "path"
-import { loadJsonFile } from "load-json-file"
-import { writeJsonFile } from "write-json-file"
-import { createFormat } from "./formatPlugin.js"
+import { equals } from 'ramda'
+import { basename } from 'path'
+import { loadJsonFile } from 'load-json-file'
+import { writeJsonFile } from 'write-json-file'
+import { createFormat } from './formatPlugin.js'
 
 export const builtInFormatPlugins = {
-  ".json": createFormat({
+  '.json': createFormat({
     read({ resolvedPath }) {
       return loadJsonFile<object>(resolvedPath)
     },
@@ -16,7 +16,7 @@ export const builtInFormatPlugins = {
       return equals(actual, expected)
     },
     async write(expected, { resolvedPath, _writeProjectManifest }) {
-      if (basename(resolvedPath) === "package.json") {
+      if (basename(resolvedPath) === 'package.json') {
         await _writeProjectManifest(expected)
         return
       }
