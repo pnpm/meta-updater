@@ -1,6 +1,6 @@
 {
   "name": "@pnpm/meta-updater",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Keeps meta files up-to-date in a monorepo",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -13,7 +13,7 @@
   "scripts": {
     "prepublishOnly": "pnpm run compile",
     "compile": "rimraf lib && tsc",
-    "test": "pnpm run compile && NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "pnpm run compile && NODE_OPTIONS=--experimental-vm-modules jest --verbose=false"
   },
   "repository": {
     "type": "git",
@@ -30,27 +30,28 @@
   },
   "homepage": "https://github.com/pnpm/meta-updater#readme",
   "dependencies": {
-    "@pnpm/find-workspace-dir": "^3.0.1",
-    "@pnpm/find-workspace-packages": "^3.1.0",
+    "@pnpm/find-workspace-dir": "^4.0.2",
+    "@pnpm/find-workspace-packages": "^4.0.36",
     "@pnpm/logger": "^4.0.0",
-    "@pnpm/types": "^7.3.0",
-    "load-json-file": "^6.2.0",
-    "meow": "^10.0.1",
+    "@pnpm/types": "^8.5.0",
+    "@yarnpkg/core": "4.0.0-rc.14",
+    "load-json-file": "^7.0.1",
+    "meow": "^10.1.3",
     "print-diff": "^1.0.0",
-    "ramda": "^0.27.1",
-    "write-json-file": "^4.3.0"
+    "ramda": "^0.28.0",
+    "write-json-file": "^5.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
-    "@types/jest": "^26.0.23",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^27.5.2",
     "@types/node": "^15.12.5",
-    "@types/ramda": "^0.27.41",
-    "execa": "^5.1.1",
-    "fs-extra": "^10.0.0",
-    "jest": "^27.0.6",
+    "@types/ramda": "^0.28.15",
+    "execa": "^6.1.0",
+    "fs-extra": "^10.1.0",
+    "jest": "^27.5.1",
     "rimraf": "^3.0.2",
     "tempy": "^1.0.1",
-    "ts-jest": "^27.0.3",
-    "typescript": "^4.3.4"
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.3"
   }
 }

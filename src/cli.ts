@@ -2,7 +2,8 @@
 import meow from 'meow'
 import update from './index.js'
 
-const cli = meow(`
+const cli = meow(
+  `
 Usage
   $ meta-updater
 
@@ -12,14 +13,16 @@ Options
 Examples
   $ meta-updater
   $ meta-updater --test
-`, {
-  importMeta: import.meta,
-  flags: {
-    test: {
-      type: 'boolean',
+`,
+  {
+    importMeta: import.meta,
+    flags: {
+      test: {
+        type: 'boolean',
+      },
     },
-  },
-})
+  }
+)
 
 update(cli.flags).catch((err) => {
   console.error(err)
