@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { unlink, stat } from 'fs/promises'
-import findWorkspaceDir from '@pnpm/find-workspace-dir'
+import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import printDiff from 'print-diff'
 import { findWorkspacePackagesNoCheck } from '@pnpm/find-workspace-packages'
 import { UpdateOptions, UpdateOptionsLegacy, UpdateOptionsWithFormats } from './updater/updateOptions.js'
@@ -23,7 +23,7 @@ export {
 export type { Files } from './updater/files'
 
 export default async function (opts: { test?: boolean }) {
-  const workspaceDir = await findWorkspaceDir['default'](process.cwd())
+  const workspaceDir = await findWorkspaceDir(process.cwd())
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)
   const updater = await import(`file://${resolve('.meta-updater/main.mjs').replace(/\\/g, '/')}`)
   const updateOptions = await updater.default(workspaceDir)
