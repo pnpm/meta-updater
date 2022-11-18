@@ -70,8 +70,9 @@ export async function performUpdates<
   const { files } = update
   const formats = 'formats' in update ? { ...builtInFormatPlugins, ...update.formats } : builtInFormatPlugins
 
-  const promises = pkgs.flatMap(({ dir, manifest, writeProjectManifest }) =>
-    Object.keys(files).map(async (fileKey) => {
+  const diffs = []
+  for (const { dir, manifest, writeProjectManifest } of pkgs) {
+    for (const [fileKey, updateFile] of Object.entries(files)) {
       const updateTargetFile = !opts?.test
       const { file, formatPlugin } = parseFileKey(fileKey, formats)
       const resolvedPath = resolve(dir, file)
@@ -83,12 +84,12 @@ export async function performUpdates<
         _writeProjectManifest: writeProjectManifest,
       }
       const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
-      const expected = await formatPlugin.update(clone(actual), files[fileKey], formatHandlerOptions)
+      const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
       const equal =
         (actual == null && expected == null) ||
         (actual != null && expected != null && (await formatPlugin.equal(expected, actual, formatHandlerOptions)))
       if (equal) {
-        return
+        continue
       }
 
       if (updateTargetFile) {
@@ -97,23 +98,14 @@ export async function performUpdates<
         } else {
           await formatPlugin.write(expected, formatHandlerOptions)
         }
-        return
+        continue
       }
 
-      return { actual, expected, path: resolvedPath }
-    })
-  )
-
-  const diffs = await Promise.allSettled(promises)
-  const errors = diffs.flatMap((diff) => {
-    switch (diff.status) {
-      case 'fulfilled':
-        return diff.value ?? []
-      case 'rejected':
-        return diff.reason
+      diffs.push({ actual, expected, path: resolvedPath })
     }
-  })
-  return errors.length > 0 ? errors : null
+  }
+
+  return diffs.length > 0 ? diffs : null
 }
 
 function printJsonDiff(actual: unknown, expected: unknown, out: NodeJS.WriteStream) {
