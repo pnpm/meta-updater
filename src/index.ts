@@ -27,16 +27,18 @@ export default async function (opts: { test?: boolean }) {
   if (!workspaceDir) throw new Error(`Cannot find a workspace at ${process.cwd()}`)
   const updater = await import(`file://${resolve('.meta-updater/main.mjs').replace(/\\/g, '/')}`)
   const updateOptions = await updater.default(workspaceDir)
-  const result = await performUpdates(workspaceDir, updateOptions, opts)
-  if (opts.test && result != null) {
+  const errors = await performUpdates(workspaceDir, updateOptions, opts)
+  if (errors != null) {
     const out = process.stderr
-    for (const error of result) {
+    for (const error of errors) {
       if ('exception' in error) {
-        out.write(`ERROR: ${error.exception}`)
+        out.write(`ERROR: ${error.exception}\n`)
       } else {
-        const { path, actual, expected } = error
-        out.write(`ERROR: ${path} is not up-to-date`)
-        printJsonDiff(actual, expected, out)
+        if (opts.test) {
+          const { path, actual, expected } = error
+          out.write(`ERROR: ${path} is not up-to-date`)
+          printJsonDiff(actual, expected, out)
+        }
       }
     }
     process.exit(1)
@@ -70,42 +72,48 @@ export async function performUpdates<
   const { files } = update
   const formats = 'formats' in update ? { ...builtInFormatPlugins, ...update.formats } : builtInFormatPlugins
 
-  const diffs = []
+  const errors = []
   for (const { dir, manifest, writeProjectManifest } of pkgs) {
     for (const [fileKey, updateFile] of Object.entries(files)) {
       const updateTargetFile = !opts?.test
       const { file, formatPlugin } = parseFileKey(fileKey, formats)
       const resolvedPath = resolve(dir, file)
-      const formatHandlerOptions = {
-        file,
-        dir,
-        manifest: clone(manifest),
-        resolvedPath,
-        _writeProjectManifest: writeProjectManifest,
-      }
-      const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
-      const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
-      const equal =
-        (actual == null && expected == null) ||
-        (actual != null && expected != null && (await formatPlugin.equal(expected, actual, formatHandlerOptions)))
-      if (equal) {
-        continue
-      }
 
-      if (updateTargetFile) {
-        if (expected == null) {
-          await unlink(resolvedPath)
-        } else {
-          await formatPlugin.write(expected, formatHandlerOptions)
+      try {
+        const formatHandlerOptions = {
+          file,
+          dir,
+          manifest: clone(manifest),
+          resolvedPath,
+          _writeProjectManifest: writeProjectManifest,
         }
-        continue
-      }
+        const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
+        const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
+        const equal =
+          (actual == null && expected == null) ||
+          (actual != null && expected != null && (await formatPlugin.equal(expected, actual, formatHandlerOptions)))
+        if (equal) {
+          continue
+        }
 
-      diffs.push({ actual, expected, path: resolvedPath })
+        if (updateTargetFile) {
+          if (expected == null) {
+            await unlink(resolvedPath)
+          } else {
+            await formatPlugin.write(expected, formatHandlerOptions)
+          }
+          continue
+        }
+
+        errors.push({ actual, expected, path: resolvedPath })
+      } catch (error) {
+        const errorMessage = `Error while processing ${resolvedPath}: ${error.message}`;
+        errors.push({ exception: errorMessage });
+      }
     }
   }
 
-  return diffs.length > 0 ? diffs : null
+  return errors.length > 0 ? errors : null
 }
 
 function printJsonDiff(actual: unknown, expected: unknown, out: NodeJS.WriteStream) {
