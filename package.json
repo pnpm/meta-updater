@@ -34,7 +34,6 @@
     "@pnpm/find-workspace-packages": "^6.0.9",
     "@pnpm/logger": "^5.0.0",
     "@pnpm/types": "^9.2.0",
-    "@yarnpkg/core": "4.0.0-rc.14",
     "load-json-file": "^7.0.1",
     "meow": "^10.1.3",
     "print-diff": "^1.0.0",
