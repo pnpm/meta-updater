@@ -88,7 +88,11 @@ export async function performUpdates<
           _writeProjectManifest: writeProjectManifest,
         }
         const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
-        const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
+        const expected = await formatPlugin.update(
+          formatPlugin.clone ? formatPlugin.clone(actual, formatHandlerOptions) : clone(actual),
+          updateFile as any,
+          formatHandlerOptions,
+        )
         const equal =
           (actual == null && expected == null) ||
           (actual != null && expected != null && (await formatPlugin.equal(expected, actual, formatHandlerOptions)))

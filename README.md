@@ -71,6 +71,11 @@ const ignoreFormat = createFormat({
     const unique = (array) => Array.from(new Set() < T[number] > array).sort()
     await fs.writeFile(resolvedPath, unique(expected).join('\n'), 'utf8')
   },
+  // Optional: define a 'clone' function to control how the result of 'read' is cloned before being passed to 'update'
+  // Defaults to `structuredClone`[1] if available, otherwise `v8.deserialize(v8.serialize(obj))`.
+  clone(actual) {
+    return myCustomClone(actual)
+  },
 })
 
 export default async (_workspaceDir) => {
