@@ -57,14 +57,14 @@ type UpdateError =
 
 export async function performUpdates<
   FileNameWithOptions extends string,
-  UserDefinedFormatPlugins extends BaseFormatPlugins
+  UserDefinedFormatPlugins extends BaseFormatPlugins,
 >(
   workspaceDir: string,
   updateParam:
     | UpdateOptionsLegacy<FileNameWithOptions>
     | UpdateOptions<FileNameWithOptions>
     | UpdateOptionsWithFormats<FileNameWithOptions, UserDefinedFormatPlugins>,
-  opts?: { test?: boolean }
+  opts?: { test?: boolean },
 ): Promise<null | UpdateError[]> {
   const update = 'files' in updateParam ? updateParam : { files: updateParam }
   let pkgs = await findWorkspacePackagesNoCheck(workspaceDir)
@@ -107,8 +107,8 @@ export async function performUpdates<
 
         errors.push({ actual, expected, path: resolvedPath })
       } catch (error) {
-        const errorMessage = `Error while processing ${resolvedPath}: ${error.message}`;
-        errors.push({ exception: errorMessage });
+        const errorMessage = `Error while processing ${resolvedPath}: ${error.message}`
+        errors.push({ exception: errorMessage })
       }
     }
   }
@@ -120,7 +120,7 @@ function printJsonDiff(actual: unknown, expected: unknown, out: NodeJS.WriteStre
   printDiff(
     typeof actual !== 'string' ? JSON.stringify(actual, null, 2) : actual,
     typeof expected !== 'string' ? JSON.stringify(expected, null, 2) : expected,
-    out
+    out,
   )
 }
 
@@ -141,7 +141,7 @@ function parseFileKey(fileKey: string, formatPlugins: Record<string, FormatPlugi
 
     if (!formatPlugin) {
       throw new Error(
-        `Configuration error: there is no format plugin for fileKey "${fileKey}" with explicit format specifier "${extension}"`
+        `Configuration error: there is no format plugin for fileKey "${fileKey}" with explicit format specifier "${extension}"`,
       )
     }
 
@@ -156,8 +156,8 @@ function parseFileKey(fileKey: string, formatPlugins: Record<string, FormatPlugi
   if (!extension) {
     throw new Error(
       `Configuration error: there is no format plugin for fileKey "${fileKey}", supported extensions are ${Object.keys(
-        formatPlugins
-      )}`
+        formatPlugins,
+      )}`,
     )
   }
 

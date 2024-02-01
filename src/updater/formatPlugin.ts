@@ -16,7 +16,7 @@ export interface FormatPlugin<Content> {
   update(
     actual: Content | null,
     updater: Updater<Content>,
-    options: FormatPluginFnOptions
+    options: FormatPluginFnOptions,
   ): PromiseOrValue<Content | null>
 
   /** Called only if check for equality is required (`actual != null` & `expected != null`) */
