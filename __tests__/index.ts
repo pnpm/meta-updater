@@ -126,10 +126,10 @@ test('custom format plugins', async () => {
   })
   const spy = {
     read: jest.spyOn(mockFormat, 'read'),
+    clone: jest.spyOn(mockFormat, 'clone'),
     update: jest.spyOn(mockFormat, 'update'),
     equal: jest.spyOn(mockFormat, 'equal'),
     write: jest.spyOn(mockFormat, 'write'),
-    clone: jest.spyOn(mockFormat, 'clone'),
   }
   const updateOptions = createUpdateOptions({
     files: {

@@ -12,6 +12,13 @@ export interface FormatPlugin<Content> {
   /** Called only if file exists */
   read(options: FormatPluginFnOptions): PromiseOrValue<Content>
 
+  /**
+   * Used to clone the object returned by `read` before passing it to `update`.
+   * Defaults to `structuredClone`[1] if available, otherwise `v8.deserialize(v8.serialize(obj))`.
+   * [1]: https://developer.mozilla.org/en-US/docs/web/api/structuredclone
+   */
+  clone?(value: Content, options: FormatPluginFnOptions): Content
+
   /** `actual` is `null` when file doesn't exist */
   update(
     actual: Content | null,
@@ -24,13 +31,6 @@ export interface FormatPlugin<Content> {
 
   /** Called only if write is required (`--test` isn't specified, `expected != null` and `expected` is not equal to `actual`) */
   write(expected: Content, options: FormatPluginFnOptions): PromiseOrValue<void>
-
-  /**
-   * Used to clone the object returned by `read` before passing it to `update`.
-   * Defaults to `structuredClone`[1] if available, otherwise `v8.deserialize(v8.serialize(obj))`.
-   * [1]: https://developer.mozilla.org/en-US/docs/web/api/structuredclone
-   */
-  clone?(value: Content, options: FormatPluginFnOptions): Content
 }
 
 export interface FormatPluginFnOptions {
