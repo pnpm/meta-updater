@@ -104,7 +104,7 @@ test('config files are removed', async () => {
   expect(fsx.existsSync(path.join(tmp, 'packages/bar/tsconfig.json'))).toBeTruthy()
 })
 
-test('custom format plugins', async () => {
+test('custom format plugins are used', async () => {
   const tmp = tempy.directory()
   await fsx.copy(WORKSPACE1, tmp)
   const mockFormat = createFormat({
