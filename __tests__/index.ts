@@ -40,7 +40,7 @@ test('updates are detected', async () => {
         },
       },
     }),
-    { test: true }
+    { test: true },
   )
   expect(result).toEqual([
     {
@@ -73,7 +73,7 @@ test('new config files are added', async () => {
           return { foo: 1 }
         },
       },
-    })
+    }),
   )
   expect(result).toBe(null)
   const fooConfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/foo/config/config.json'))
@@ -96,7 +96,7 @@ test('config files are removed', async () => {
           return config
         },
       },
-    })
+    }),
   )
   expect(result).toBe(null)
   expect(fsx.existsSync(path.join(tmp, 'packages/foo/tsconfig.json'))).toBeFalsy()
