@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals'
 import { execa } from 'execa'
 import fsx from 'fs-extra'
 import { loadJsonFile } from 'load-json-file'
@@ -5,7 +6,6 @@ import path from 'path'
 import tempy from 'tempy'
 import { fileURLToPath } from 'url'
 import { createFormat, createUpdateOptions, performUpdates } from '../src/index.js'
-import { jest } from '@jest/globals'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
