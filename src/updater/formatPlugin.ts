@@ -17,7 +17,7 @@ export interface FormatPlugin<Content> {
    * Defaults to `structuredClone`[1] if available, otherwise `v8.deserialize(v8.serialize(obj))`.
    * [1]: https://developer.mozilla.org/en-US/docs/web/api/structuredclone
    */
-  clone?(value: Content, options: FormatPluginFnOptions): Content
+  clone?(value: Content): Content
 
   /** `actual` is `null` when file doesn't exist */
   update(

@@ -78,6 +78,7 @@ export async function performUpdates<
       const updateTargetFile = !opts?.test
       const { file, formatPlugin } = parseFileKey(fileKey, formats)
       const resolvedPath = resolve(dir, file)
+      const cloneFn = formatPlugin.clone ?? clone
 
       try {
         const formatHandlerOptions = {
@@ -89,7 +90,7 @@ export async function performUpdates<
         }
         const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
         const expected = await formatPlugin.update(
-          formatPlugin.clone ? formatPlugin.clone(actual, formatHandlerOptions) : clone(actual),
+          actual != null ? cloneFn(actual) : null,
           updateFile as any,
           formatHandlerOptions,
         )
