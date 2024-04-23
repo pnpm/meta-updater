@@ -90,7 +90,7 @@ export default async (_workspaceDir) => {
 }
 ```
 
-See more examples at [src/examples/](src/example/)
+See more examples at [src/examples/](src/examples/)
 
 To perform the update on the affected config files, run `pnpm meta-updater`.
 
