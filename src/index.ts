@@ -57,14 +57,14 @@ type UpdateError =
 
 export async function performUpdates<
   FileNameWithOptions extends string,
-  UserDefinedFormatPlugins extends BaseFormatPlugins
+  UserDefinedFormatPlugins extends BaseFormatPlugins,
 >(
   workspaceDir: string,
   updateParam:
     | UpdateOptionsLegacy<FileNameWithOptions>
     | UpdateOptions<FileNameWithOptions>
     | UpdateOptionsWithFormats<FileNameWithOptions, UserDefinedFormatPlugins>,
-  opts?: { test?: boolean }
+  opts?: { test?: boolean },
 ): Promise<null | UpdateError[]> {
   const update = 'files' in updateParam ? updateParam : { files: updateParam }
   let pkgs = await findWorkspacePackagesNoCheck(workspaceDir)
@@ -87,8 +87,13 @@ export async function performUpdates<
           resolvedPath,
           _writeProjectManifest: writeProjectManifest,
         }
+        const formatPluginClone = formatPlugin.clone ?? clone
         const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
-        const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
+        const expected = await formatPlugin.update(
+          actual != null ? formatPluginClone(actual) : null,
+          updateFile as any,
+          formatHandlerOptions,
+        )
         const equal =
           (actual == null && expected == null) ||
           (actual != null && expected != null && (await formatPlugin.equal(expected, actual, formatHandlerOptions)))
@@ -107,8 +112,8 @@ export async function performUpdates<
 
         errors.push({ actual, expected, path: resolvedPath })
       } catch (error) {
-        const errorMessage = `Error while processing ${resolvedPath}: ${error.message}`;
-        errors.push({ exception: errorMessage });
+        const errorMessage = `Error while processing ${resolvedPath}: ${error.message}`
+        errors.push({ exception: errorMessage })
       }
     }
   }
@@ -120,7 +125,7 @@ function printJsonDiff(actual: unknown, expected: unknown, out: NodeJS.WriteStre
   printDiff(
     typeof actual !== 'string' ? JSON.stringify(actual, null, 2) : actual,
     typeof expected !== 'string' ? JSON.stringify(expected, null, 2) : expected,
-    out
+    out,
   )
 }
 
@@ -141,7 +146,7 @@ function parseFileKey(fileKey: string, formatPlugins: Record<string, FormatPlugi
 
     if (!formatPlugin) {
       throw new Error(
-        `Configuration error: there is no format plugin for fileKey "${fileKey}" with explicit format specifier "${extension}"`
+        `Configuration error: there is no format plugin for fileKey "${fileKey}" with explicit format specifier "${extension}"`,
       )
     }
 
@@ -156,8 +161,8 @@ function parseFileKey(fileKey: string, formatPlugins: Record<string, FormatPlugi
   if (!extension) {
     throw new Error(
       `Configuration error: there is no format plugin for fileKey "${fileKey}", supported extensions are ${Object.keys(
-        formatPlugins
-      )}`
+        formatPlugins,
+      )}`,
     )
   }
 

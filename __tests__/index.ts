@@ -1,10 +1,11 @@
+import { jest } from '@jest/globals'
 import { execa } from 'execa'
 import fsx from 'fs-extra'
 import { loadJsonFile } from 'load-json-file'
 import path from 'path'
 import tempy from 'tempy'
 import { fileURLToPath } from 'url'
-import { createUpdateOptions, performUpdates } from '../src/index.js'
+import { createFormat, createUpdateOptions, performUpdates } from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
@@ -40,7 +41,7 @@ test('updates are detected', async () => {
         },
       },
     }),
-    { test: true }
+    { test: true },
   )
   expect(result).toEqual([
     {
@@ -73,7 +74,7 @@ test('new config files are added', async () => {
           return { foo: 1 }
         },
       },
-    })
+    }),
   )
   expect(result).toBe(null)
   const fooConfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/foo/config/config.json'))
@@ -96,9 +97,66 @@ test('config files are removed', async () => {
           return config
         },
       },
-    })
+    }),
   )
   expect(result).toBe(null)
   expect(fsx.existsSync(path.join(tmp, 'packages/foo/tsconfig.json'))).toBeFalsy()
   expect(fsx.existsSync(path.join(tmp, 'packages/bar/tsconfig.json'))).toBeTruthy()
+})
+
+test('custom format plugins are used', async () => {
+  const tmp = tempy.directory()
+  await fsx.copy(WORKSPACE1, tmp)
+  const mockFormat = createFormat({
+    read(options) {
+      return fsx.readFile(options.resolvedPath, 'utf8')
+    },
+    clone(value) {
+      return value
+    },
+    update(actual, updater, options) {
+      return updater(actual, options)
+    },
+    equal(expected, actual) {
+      return actual === expected
+    },
+    write(expected, options) {
+      return fsx.writeFile(options.resolvedPath, expected)
+    },
+  })
+  const spy = {
+    read: jest.spyOn(mockFormat, 'read'),
+    clone: jest.spyOn(mockFormat, 'clone'),
+    update: jest.spyOn(mockFormat, 'update'),
+    equal: jest.spyOn(mockFormat, 'equal'),
+    write: jest.spyOn(mockFormat, 'write'),
+  }
+  const updateOptions = createUpdateOptions({
+    files: {
+      ['name.txt [#mock]']: (_, { manifest }) => {
+        return typeof manifest.name === 'string' ? `${manifest.name}\n` : null
+      },
+    },
+    formats: {
+      ['#mock']: mockFormat,
+    },
+  })
+  const result = await performUpdates(tmp, updateOptions)
+  expect(result).toBe(null)
+  expect(spy.read).toHaveBeenCalledTimes(3)
+  expect(spy.clone).toHaveBeenCalledTimes(3)
+  expect(spy.clone).toHaveBeenCalledWith('old\n')
+  expect(spy.clone).toHaveBeenCalledWith('bar\n')
+  expect(spy.clone).toHaveBeenCalledWith('root\n')
+  expect(spy.update).toHaveBeenCalledTimes(3)
+  expect(spy.update).toHaveBeenCalledWith('old\n', expect.any(Function), expect.any(Object))
+  expect(spy.update).toHaveBeenCalledWith('bar\n', expect.any(Function), expect.any(Object))
+  expect(spy.update).toHaveBeenCalledWith('root\n', expect.any(Function), expect.any(Object))
+  expect(spy.equal).toHaveBeenCalledTimes(2)
+  expect(spy.equal).toHaveBeenCalledWith('foo\n', 'old\n', expect.any(Object))
+  expect(spy.equal).toHaveBeenCalledWith('bar\n', 'bar\n', expect.any(Object))
+  expect(spy.write).toHaveBeenCalledTimes(1)
+  expect(fsx.existsSync(path.join(tmp, 'packages/foo/name.txt'))).toBeTruthy()
+  expect(fsx.existsSync(path.join(tmp, 'packages/bar/name.txt'))).toBeTruthy()
+  expect(fsx.existsSync(path.join(tmp, 'name.txt'))).toBeFalsy()
 })
