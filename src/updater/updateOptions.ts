@@ -1,4 +1,4 @@
-import type { Files } from './files'
+import type { Files } from './files.ts'
 import type { BaseFormatPlugins } from './formatPlugin.js'
 import type { BuildInFormatPlugins } from './builtInFormats.js'
 

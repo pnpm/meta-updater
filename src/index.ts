@@ -20,7 +20,7 @@ export {
   type UpdateOptions,
   type UpdateOptionsWithFormats,
 } from './updater/updateOptions.js'
-export type { Files } from './updater/files'
+export type { Files } from './updater/files.ts'
 
 export default async function (opts: { test?: boolean }) {
   const workspaceDir = await findWorkspaceDir(process.cwd())

@@ -1,5 +1,5 @@
-import { createUpdateOptions } from '..'
-import { eslintrc, tsconfig } from './defaultFiles'
+import { createUpdateOptions } from '../updater/updateOptions.js'
+import { eslintrc, tsconfig } from './defaultFiles.js'
 
 /**
  * Usage Example 1: Simple usage
