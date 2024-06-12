@@ -2,7 +2,7 @@ import { execa } from 'execa'
 import fsx from 'fs-extra'
 import { loadJsonFile } from 'load-json-file'
 import path from 'path'
-import tempy from 'tempy'
+import { temporaryDirectory } from 'tempy'
 import { fileURLToPath } from 'url'
 import { createUpdateOptions, performUpdates } from '../src/index.js'
 
@@ -11,7 +11,7 @@ const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
 const CLI = path.join(__dirname, '../lib/cli.js')
 
 test('updates manifests', async () => {
-  const tmp = tempy.directory()
+  const tmp = temporaryDirectory()
   await fsx.copy(WORKSPACE1, tmp)
   const result = await execa('node', [CLI], { cwd: tmp })
   expect(result.exitCode).toBe(0)
@@ -26,7 +26,7 @@ test('updates manifests', async () => {
 })
 
 test('updates are detected', async () => {
-  const tmp = tempy.directory()
+  const tmp = temporaryDirectory()
   await fsx.copy(WORKSPACE1, tmp)
   const result = await performUpdates(
     tmp,
@@ -62,7 +62,7 @@ test('updates are detected', async () => {
 })
 
 test('new config files are added', async () => {
-  const tmp = tempy.directory()
+  const tmp = temporaryDirectory()
   await fsx.copy(WORKSPACE1, tmp)
   const result = await performUpdates(
     tmp,
@@ -83,7 +83,7 @@ test('new config files are added', async () => {
 })
 
 test('config files are removed', async () => {
-  const tmp = tempy.directory()
+  const tmp = temporaryDirectory()
   await fsx.copy(WORKSPACE1, tmp)
   const result = await performUpdates(
     tmp,

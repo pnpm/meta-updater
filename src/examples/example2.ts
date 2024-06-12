@@ -1,7 +1,8 @@
 import * as fs from 'fs/promises'
 import { equals } from 'ramda'
-import { createFormat, createUpdateOptions } from '..'
-import { eslintrc, tsconfig } from './defaultFiles'
+import { createFormat } from '../updater/formatPlugin.js'
+import { createUpdateOptions } from '../updater/updateOptions.js'
+import { eslintrc, tsconfig } from './defaultFiles.js'
 
 /**
  * User-defined format '.gitignore'

@@ -10,10 +10,10 @@
     "strictNullChecks": true,
     "lib": ["ES2020"],
     "types": ["node", "jest"],
-    "target": "es2019",
+    "target": "es2020",
     "outDir": "lib",
-    "module": "es2020",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "skipLibCheck": true,
     "noErrorTruncation": true
   },

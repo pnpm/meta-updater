@@ -1,8 +1,8 @@
 import { resolve } from 'path'
 import { unlink, stat } from 'fs/promises'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
-import printDiff from 'print-diff'
-import { findWorkspacePackagesNoCheck } from '@pnpm/find-workspace-packages'
+import { printUnifiedDiff } from 'print-diff'
+import { findWorkspacePackagesNoCheck } from '@pnpm/workspace.find-packages'
 import { UpdateOptions, UpdateOptionsLegacy, UpdateOptionsWithFormats } from './updater/updateOptions.js'
 import { BaseFormatPlugins, FormatPlugin } from './updater/formatPlugin.js'
 import { builtInFormatPlugins } from './updater/builtInFormats.js'
@@ -20,7 +20,7 @@ export {
   type UpdateOptions,
   type UpdateOptionsWithFormats,
 } from './updater/updateOptions.js'
-export type { Files } from './updater/files'
+export type { Files } from './updater/files.ts'
 
 export default async function (opts: { test?: boolean }) {
   const workspaceDir = await findWorkspaceDir(process.cwd())
@@ -117,7 +117,7 @@ export async function performUpdates<
 }
 
 function printJsonDiff(actual: unknown, expected: unknown, out: NodeJS.WriteStream) {
-  printDiff(
+  printUnifiedDiff(
     typeof actual !== 'string' ? JSON.stringify(actual, null, 2) : actual,
     typeof expected !== 'string' ? JSON.stringify(expected, null, 2) : expected,
     out
