@@ -2,7 +2,7 @@ import { execa } from 'execa'
 import fsx from 'fs-extra'
 import { loadJsonFile } from 'load-json-file'
 import path from 'path'
-import {temporaryDirectory} from 'tempy'
+import { temporaryDirectory } from 'tempy'
 import { fileURLToPath } from 'url'
 import { createUpdateOptions, performUpdates } from '../src/index.js'
 
