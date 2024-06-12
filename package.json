@@ -21,7 +21,7 @@
   },
   "keywords": [],
   "engines": {
-    "node": ">=18.19.0"
+    "node": ">=18.12"
   },
   "author": "Zoltan Kochan <z@kochan.io> (https://www.kochan.io/)",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "@pnpm/types": "^10.0.0",
     "@pnpm/workspace.find-packages": "^2.0.4",
     "load-json-file": "^7.0.1",
-    "meow": "^13.2.0",
+    "meow": "^11.0.0",
     "print-diff": "^2.0.0",
     "ramda": "^0.30.0",
     "write-json-file": "^5.0.0"
