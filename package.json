@@ -1,6 +1,6 @@
 {
   "name": "@pnpm/meta-updater",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Keeps meta files up-to-date in a monorepo",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
