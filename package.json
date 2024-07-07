@@ -21,7 +21,7 @@
   },
   "keywords": [],
   "engines": {
-    "node": ">=18.19.0"
+    "node": ">=18.12.0"
   },
   "author": "Zoltan Kochan <z@kochan.io> (https://www.kochan.io/)",
   "license": "MIT",
