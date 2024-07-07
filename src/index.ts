@@ -73,16 +73,16 @@ export async function performUpdates<
   const formats = 'formats' in update ? { ...builtInFormatPlugins, ...update.formats } : builtInFormatPlugins
 
   const errors = []
-  for (const { dir, manifest, writeProjectManifest } of pkgs) {
+  for (const { rootDir, manifest, writeProjectManifest } of pkgs) {
     for (const [fileKey, updateFile] of Object.entries(files)) {
       const updateTargetFile = !opts?.test
       const { file, formatPlugin } = parseFileKey(fileKey, formats)
-      const resolvedPath = resolve(dir, file)
+      const resolvedPath = resolve(rootDir, file)
 
       try {
         const formatHandlerOptions = {
           file,
-          dir,
+          dir: rootDir,
           manifest: clone(manifest),
           resolvedPath,
           _writeProjectManifest: writeProjectManifest,

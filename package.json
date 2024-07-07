@@ -32,8 +32,8 @@
   "dependencies": {
     "@pnpm/find-workspace-dir": "^7.0.0",
     "@pnpm/logger": "^5.0.0",
-    "@pnpm/types": "^10.0.0",
-    "@pnpm/workspace.find-packages": "^2.0.4",
+    "@pnpm/types": "^11.0.0",
+    "@pnpm/workspace.find-packages": "^4.0.0",
     "load-json-file": "^7.0.1",
     "meow": "^11.0.0",
     "print-diff": "^2.0.0",
