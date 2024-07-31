@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { unlink, stat } from 'fs/promises'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
+import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
 import { printUnifiedDiff } from 'print-diff'
 import { findWorkspacePackagesNoCheck } from '@pnpm/workspace.find-packages'
 import { UpdateOptions, UpdateOptionsLegacy, UpdateOptionsWithFormats } from './updater/updateOptions.js'
@@ -67,7 +68,10 @@ export async function performUpdates<
   opts?: { test?: boolean }
 ): Promise<null | UpdateError[]> {
   const update = 'files' in updateParam ? updateParam : { files: updateParam }
-  let pkgs = await findWorkspacePackagesNoCheck(workspaceDir)
+  const workspaceManifest = await readWorkspaceManifest(workspaceDir)
+  let pkgs = await findWorkspacePackagesNoCheck(workspaceDir, {
+    patterns: workspaceManifest?.packages,
+  })
 
   const { files } = update
   const formats = 'formats' in update ? { ...builtInFormatPlugins, ...update.formats } : builtInFormatPlugins

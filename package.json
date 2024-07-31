@@ -1,6 +1,6 @@
 {
   "name": "@pnpm/meta-updater",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Keeps meta files up-to-date in a monorepo",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -34,6 +34,7 @@
     "@pnpm/logger": "^5.0.0",
     "@pnpm/types": "^11.0.0",
     "@pnpm/workspace.find-packages": "^4.0.0",
+    "@pnpm/workspace.read-manifest": "^2.2.0",
     "load-json-file": "^7.0.1",
     "meow": "^11.0.0",
     "print-diff": "^2.0.0",
