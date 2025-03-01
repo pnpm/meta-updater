@@ -8,6 +8,7 @@ import { createUpdateOptions, performUpdates } from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WORKSPACE1 = path.join(__dirname, '../__fixtures__/workspace-1')
+const WORKSPACE2 = path.join(__dirname, '../__fixtures__/workspace-2')
 const CLI = path.join(__dirname, '../lib/cli.js')
 
 test('updates manifests', async () => {
@@ -23,6 +24,15 @@ test('updates manifests', async () => {
   expect(fooTsconfig.foo).toBe(1)
   const barTsconfig = await loadJsonFile<{ foo: number }>(path.join(tmp, 'packages/bar/tsconfig.json'))
   expect(barTsconfig.foo).toBe(1)
+})
+
+test('updates manifest if only the order of keys has changed', async () => {
+  const tmp = temporaryDirectory()
+  await fsx.copy(WORKSPACE2, tmp)
+  const result = await execa('node', [CLI], { cwd: tmp })
+  expect(result.exitCode).toBe(0)
+  const barManifest = await loadJsonFile<{ name: string }>(path.join(tmp, 'packages/bar/package.json'))
+  expect(Object.keys(barManifest)).toStrictEqual(['dependencies', 'name', 'version'])
 })
 
 test('updates are detected', async () => {
