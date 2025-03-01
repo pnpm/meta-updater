@@ -1,4 +1,3 @@
-import { equals } from 'ramda'
 import { basename } from 'path'
 import { loadJsonFile } from 'load-json-file'
 import { writeJsonFile } from 'write-json-file'
@@ -13,7 +12,7 @@ export const builtInFormatPlugins = {
       return updater(actual, options)
     },
     equal(expected, actual) {
-      return equals(actual, expected)
+      return JSON.stringify(actual) === JSON.stringify(expected)
     },
     async write(expected, { resolvedPath, _writeProjectManifest }) {
       if (basename(resolvedPath) === 'package.json') {

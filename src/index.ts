@@ -2,6 +2,7 @@ import { resolve } from 'path'
 import { unlink, stat } from 'fs/promises'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
+import { type ProjectManifest } from '@pnpm/types'
 import { printUnifiedDiff } from 'print-diff'
 import { findWorkspacePackagesNoCheck } from '@pnpm/workspace.find-packages'
 import { UpdateOptions, UpdateOptionsLegacy, UpdateOptionsWithFormats } from './updater/updateOptions.js'
@@ -89,7 +90,7 @@ export async function performUpdates<
           dir: rootDir,
           manifest: clone(manifest),
           resolvedPath,
-          _writeProjectManifest: writeProjectManifest,
+          _writeProjectManifest: (manifest: ProjectManifest) => writeProjectManifest(manifest, true),
         }
         const actual = (await fileExists(resolvedPath)) ? await formatPlugin.read(formatHandlerOptions) : null
         const expected = await formatPlugin.update(clone(actual), updateFile as any, formatHandlerOptions)
