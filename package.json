@@ -31,10 +31,10 @@
   "homepage": "https://github.com/pnpm/meta-updater#readme",
   "dependencies": {
     "@pnpm/find-workspace-dir": "^1000.1.0",
-    "@pnpm/logger": "^1000.0.0",
-    "@pnpm/types": "^1000.2.0",
-    "@pnpm/workspace.find-packages": "^1000.0.12",
-    "@pnpm/workspace.read-manifest": "^1000.1.0",
+    "@pnpm/logger": "^1001.0.0",
+    "@pnpm/types": "^1000.5.0",
+    "@pnpm/workspace.find-packages": "^1000.0.22",
+    "@pnpm/workspace.read-manifest": "^1000.1.4",
     "load-json-file": "^7.0.1",
     "meow": "^11.0.0",
     "print-diff": "^2.0.0",
@@ -51,7 +51,7 @@
     "ramda": "^0.30.0",
     "rimraf": "^5.0.5",
     "tempy": "^3.1.0",
-    "ts-jest": "^29.2.6",
-    "typescript": "^5.8.2"
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
   }
 }
